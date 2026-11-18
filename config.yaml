@@ -1,0 +1,65 @@
+# Configuração da máquina de ofertas. O Claude ajusta este arquivo na revisão semanal.
+
+marca:
+  nome: "Achei pra Casa"
+  canal_telegram: "@acheipracasa"      # trocar pelo @ real do canal
+  site_titulo: "Achei pra Casa — achados úteis com desconto"
+
+# Termos buscados na Shopee (um por busca). Nicho: casa, cozinha e organização.
+buscas:
+  - organizador de gaveta
+  - organizador de geladeira
+  - pote hermético
+  - utensílios de cozinha
+  - mini processador
+  - seladora a vácuo
+  - porta temperos
+  - escorredor de louça
+  - organizador de armário
+  - cabide veludo
+  - mop giratório
+  - mini aspirador
+  - luminária de led
+  - difusor de ambiente
+  - suporte de parede adesivo
+  - garrafa térmica
+  - mini ventilador portátil
+  - jogo de facas
+  - forma de silicone
+  - caixa organizadora
+
+resultados_por_busca: 30
+
+filtros:
+  preco_min: 12
+  preco_max: 180
+  nota_min: 4.6
+  vendas_min: 100
+  comissao_min: 0.03          # 3%
+  desconto_min: 0             # em %, 0 = aceita sem desconto
+  palavras_bloqueadas:
+    - suplemento
+    - melatonina
+    - creatina
+    - emagrec
+    - remédio
+    - réplica
+    - replica
+    - arma
+    - faca tática
+    - cigarro
+    - vape
+
+postagem:
+  ofertas_por_rodada: 3
+  nao_repetir_dias: 21
+
+# Pesos do ranking (o Claude ajusta com base nas vendas reais)
+pesos:
+  vendas: 1.0
+  nota: 1.0
+  desconto: 1.2
+  comissao: 1.5
+
+site:
+  max_ofertas: 60

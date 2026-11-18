@@ -1,0 +1,32 @@
+name: Relatório semanal
+
+on:
+  schedule:
+    - cron: "0 10 * * 1"   # segunda, 7h em Brasília
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  relatorio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Puxar vendas da Shopee
+        env:
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_SECRET: ${{ secrets.SHOPEE_SECRET }}
+        run: python -m bot.relatorio 7
+      - name: Salvar relatório
+        run: |
+          git config user.name "maquina-ofertas"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/relatorios
+          git diff --cached --quiet || git commit -m "Relatório $(date -u +%Y-%m-%d)"
+          git pull --rebase && git push
