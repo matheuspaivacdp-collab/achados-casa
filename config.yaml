@@ -1,9 +1,11 @@
 # Configuração da máquina de ofertas. O Claude ajusta este arquivo na revisão semanal.
 
 marca:
-  nome: "Achei pra Casa"
-  canal_telegram: "@acheipracasa"      # trocar pelo @ real do canal
-  site_titulo: "Achei pra Casa — achados úteis com desconto"
+  # "achadinhos" e "ofertas" no nome ajudam a aparecer na busca interna do Telegram.
+  # Não usar a marca Shopee no nome (regra do programa de afiliados).
+  nome: "Achadinhos pra Casa"
+  canal_telegram: "@achadinhospracasa"      # trocar pelo @ real do canal
+  site_titulo: "Achadinhos pra Casa — ofertas úteis para casa, cozinha e organização"
 
 # Termos buscados na Shopee (um por busca). Nicho: casa, cozinha e organização.
 buscas:
@@ -27,6 +29,15 @@ buscas:
   - jogo de facas
   - forma de silicone
   - caixa organizadora
+  - jogo de cama
+  - cortina blackout
+  - tapete sala
+  - acessórios air fryer
+  # sazonais (o Claude troca a cada mês)
+  - enfeite de natal
+  - pisca pisca led
+  - toalha de mesa natal
+  - ventilador de mesa
 
 resultados_por_busca: 30
 
@@ -51,8 +62,11 @@ filtros:
     - vape
 
 postagem:
-  ofertas_por_rodada: 3
+  ofertas_por_rodada: 2       # 7 rodadas/dia (ver workflow) = ~14 ofertas/dia
   nao_repetir_dias: 21
+  # Datas duplas e grandes campanhas: posta mais por rodada (formato MM-DD)
+  dias_especiais: ["12-12", "01-01", "02-02", "03-03", "03-15"]
+  ofertas_por_rodada_especial: 4
 
 # Pesos do ranking (o Claude ajusta com base nas vendas reais)
 pesos:

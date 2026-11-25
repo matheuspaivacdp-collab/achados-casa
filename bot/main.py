@@ -40,7 +40,16 @@ def coletar(shopee, cfg) -> list[dict]:
     return ofertas
 
 
-def rodar(teste=False, shopee=None, telegram=None):
+def quantidade_da_rodada(cfg) -> int:
+    from datetime import datetime, timedelta, timezone
+    hoje = datetime.now(timezone(timedelta(hours=-3))).strftime("%m-%d")
+    post = cfg["postagem"]
+    if hoje in post.get("dias_especiais", []):
+        return post.get("ofertas_por_rodada_especial", post["ofertas_por_rodada"])
+    return post["ofertas_por_rodada"]
+
+
+def rodar(teste=False, shopee=None, telegram=None, quantas=None, intervalo=0):
     cfg = yaml.safe_load((RAIZ / "config.yaml").read_text())
     shopee = shopee or Shopee()
     historico = ler_json(HIST, {})
@@ -50,7 +59,7 @@ def rodar(teste=False, shopee=None, telegram=None):
     if not ofertas:
         raise SystemExit("Nenhuma oferta veio da Shopee. Verifique as credenciais.")
 
-    escolhidas = escolher(ofertas, cfg, historico, cfg["postagem"]["ofertas_por_rodada"])
+    escolhidas = escolher(ofertas, cfg, historico, quantas or quantidade_da_rodada(cfg))
     print(f"{len(escolhidas)} escolhidas:")
     for o in escolhidas:
         print(f"  {o['score']:>6} | R$ {o['preco']:>7.2f} | {o['comissao']*100:.0f}% | {o['nome'][:70]}")
@@ -77,6 +86,8 @@ def rodar(teste=False, shopee=None, telegram=None):
             continue
         postados += 1
         historico[o["id"]] = agora
+        if intervalo:
+            time.sleep(intervalo)
         with POSTS.open("a") as f:
             f.write(json.dumps({"ts": agora, "id": o["id"], "nome": o["nome"], "preco": o["preco"],
                                 "comissao": o["comissao"], "busca": o["busca"], "score": o["score"]},
@@ -93,4 +104,6 @@ def rodar(teste=False, shopee=None, telegram=None):
 
 
 if __name__ == "__main__":
-    rodar(teste="--teste" in sys.argv)
+    # --semente N: posta N ofertas de uma vez (para o canal não começar vazio)
+    semente = int(sys.argv[sys.argv.index("--semente") + 1]) if "--semente" in sys.argv else None
+    rodar(teste="--teste" in sys.argv, quantas=semente, intervalo=20 if semente else 0)

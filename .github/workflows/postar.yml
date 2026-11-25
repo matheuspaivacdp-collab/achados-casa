@@ -2,17 +2,28 @@ name: Postar ofertas
 
 on:
   schedule:
-    # Horários em UTC. Brasília = UTC-3 → 9h, 12h, 18h e 21h.
-    - cron: "0 12 * * *"
-    - cron: "0 15 * * *"
-    - cron: "0 21 * * *"
-    - cron: "0 0 * * *"
+    # Horários em UTC. Brasília = UTC-3 → 8h, 11h, 13h, 16h, 18h, 20h e 22h.
+    # Minutos quebrados para fugir da fila do GitHub no minuto 0.
+    - cron: "7 11 * * *"
+    - cron: "7 14 * * *"
+    - cron: "7 16 * * *"
+    - cron: "7 19 * * *"
+    - cron: "7 21 * * *"
+    - cron: "7 23 * * *"
+    - cron: "7 1 * * *"
   workflow_dispatch:
     inputs:
       teste:
         description: "Só testar (não posta nada)"
         type: boolean
         default: true
+      semente:
+        description: "Postar N ofertas de uma vez (ex.: 25 no lançamento). Vazio = rodada normal"
+        required: false
+      boas_vindas:
+        description: "Publicar e fixar a mensagem de boas-vindas"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -24,7 +35,7 @@ concurrency:
 jobs:
   rodar:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38,8 +49,13 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
+          if [ "${{ inputs.boas_vindas }}" = "true" ]; then
+            python -m bot.boas_vindas
+          fi
           if [ "${{ inputs.teste }}" = "true" ]; then
             python -m bot.main --teste
+          elif [ -n "${{ inputs.semente }}" ]; then
+            python -m bot.main --semente "${{ inputs.semente }}"
           else
             python -m bot.main
           fi
